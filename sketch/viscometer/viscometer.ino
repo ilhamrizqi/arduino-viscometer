@@ -13,21 +13,6 @@ byte laserOn = 0;
 volatile unsigned long mscounter = 0;
 volatile bool detected = false;
 
-void beep(int duration)
-{
-  tone(buzzerPin, 1000);
-  delay(duration);
-  noTone(buzzerPin);
-}
-
-void beepDetected(int duration)
-{
-  tone(buzzerPin, 3000);
-  delay(duration);
-  noTone(buzzerPin);  
-}
-
-
 void setup() {
   // put your setup code here, to run once:
   pinMode(startPin, INPUT_PULLUP);
@@ -74,12 +59,26 @@ void loop() {
   {
     digitalWrite(ledPin, HIGH);
     beepDetected(200);
-    delay(200);
+    delay(200);    
   }
   else
   {
     digitalWrite(ledPin, LOW);
   }
+}
+
+void beep(int duration)
+{
+  tone(buzzerPin, 1000);
+  delay(duration);
+  noTone(buzzerPin);
+}
+
+void beepDetected(int duration)
+{
+  tone(buzzerPin, 3000);
+  delay(duration);
+  noTone(buzzerPin);  
 }
 
 void start()
@@ -116,4 +115,5 @@ void timerInterrupt()
 {
   mscounter++;
 }
+
 
