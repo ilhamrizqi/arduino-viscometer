@@ -66,7 +66,7 @@ void loop() {
     // toggle laser
     digitalWrite(laserPin, digitalRead(laserPin)^1);
     laserOn = digitalRead(laserPin);
-    delay(1000);        
+    delay(200);        
   }
 
   ballDetected = detected;
