@@ -32,7 +32,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(stopPin), stop, FALLING);
 
   Serial.begin(9600);
-  Serial.writeln("Tekan button untuk menyalakan/mematikan laser");
+  Serial.println("Tekan button untuk menyalakan/mematikan laser");
 
   //  turn on led & laser
   digitalWrite(ledPin, HIGH);  
@@ -51,7 +51,7 @@ void loop() {
 
 void start()
 {
-  ms = 0;
+  mscounter = 0;
   Timer1.start();
 }
 
