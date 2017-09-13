@@ -13,4 +13,8 @@ Measuring viscosity of a fluid using laser
 
 # Author
 Ilham Rizqi Sasmita
+https://ilhamrizqi.com
+
+# License
+MIT License
 
