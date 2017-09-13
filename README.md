@@ -4,6 +4,7 @@ Measuring viscosity of a fluid using laser
 ## Parts
 - 1x Breadboard 830 Point Solderless PCB
 - 1x Arduino Nano v3 Atmega328P-AU
+- 1x Green LED 5mm
 - 2x Laser Diode Module
 - 2x Laser Detector Module
 - 3x Resistor 100k 1/4watt
