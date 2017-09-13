@@ -3,20 +3,37 @@
 byte startPin = 2;
 byte stopPin  = 3;
 byte buttonPin = 4;
-byte ledPin = 14;
+byte buzzerPin = 5;
+byte ledPin = 12;
 byte laserPin = 13;
 byte button = 0;
 byte laserOn = 0;
 
 //  shared variable
 volatile unsigned long mscounter = 0;
+volatile bool detected = false;
+
+void beep(int duration)
+{
+  tone(buzzerPin, 1000);
+  delay(duration);
+  noTone(buzzerPin);
+}
+
+void beepDetected(int duration)
+{
+  tone(buzzerPin, 3000);
+  delay(duration);
+  noTone(buzzerPin);  
+}
 
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(startPin, INPUT);
-  pinMode(stopPin, INPUT);
+  pinMode(startPin, INPUT_PULLUP);
+  pinMode(stopPin, INPUT_PULLUP);
   pinMode(buttonPin, INPUT);
+  pinMode(buzzerPin, OUTPUT);
   pinMode(ledPin, OUTPUT);
   pinMode(laserPin, OUTPUT);
 
@@ -35,33 +52,61 @@ void setup() {
   Serial.println("Tekan button untuk menyalakan/mematikan laser");
 
   //  turn on led & laser
-  digitalWrite(ledPin, HIGH);  
+  digitalWrite(laserPin, HIGH);
+  digitalWrite(ledPin, LOW);
+  beep(200);
 }
 
 void loop() {
+  bool ballDetected;
   // put your main code here, to run repeatedly:  
-  button = digitalRead(buttonPin);
-  if(button = 1)
+  button = digitalRead(buttonPin);  
+  if(button == 1)
   {
-    //  toggle laser
-    digitalWrite(laserPin, !digitalRead(laserPin));
-    laserOn = digitalRead(laserPin);    
+    // toggle laser
+    digitalWrite(laserPin, digitalRead(laserPin)^1);
+    laserOn = digitalRead(laserPin);
+    delay(1000);        
+  }
+
+  ballDetected = detected;
+  if(ballDetected)
+  {
+    digitalWrite(ledPin, HIGH);
+    beepDetected(200);
+    delay(200);
+  }
+  else
+  {
+    digitalWrite(ledPin, LOW);
   }
 }
 
 void start()
 {
+  if(detected)
+  {
+    return;
+  }
+  noInterrupts();
   mscounter = 0;
+  detected = true;  
+  interrupts();
+    
   Timer1.start();
 }
 
 void stop()
 {  
   unsigned long ms;    
-
+  if(!detected)
+  {
+    return;
+  }
   Timer1.stop();
   noInterrupts();
   ms = mscounter;
+  detected = false;
   interrupts();
 
   Serial.println(ms);
