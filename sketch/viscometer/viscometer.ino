@@ -43,7 +43,7 @@ void setup() {
 
   //   Timer set to 1ms
   Timer1.initialize(1000);
-  Timer1.attachInterrupt(timerCounter);
+  Timer1.attachInterrupt(timerInterrupt);
 
   attachInterrupt(digitalPinToInterrupt(startPin), start, FALLING);
   attachInterrupt(digitalPinToInterrupt(stopPin), stop, FALLING);
@@ -112,7 +112,7 @@ void stop()
   Serial.println(ms);
 }
 
-void timerCounter()
+void timerInterrupt()
 {
   mscounter++;
 }
