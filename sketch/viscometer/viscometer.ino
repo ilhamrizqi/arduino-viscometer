@@ -1,11 +1,15 @@
+#include <TimerOne.h>
 
-int startPin = 2;
-int stopPin  = 3;
-int buttonPin = 4;
-int laserPin = 13;
-int button = 0;
-int laserOn = 0;
-int ms = 0;
+byte startPin = 2;
+byte stopPin  = 3;
+byte buttonPin = 4;
+byte ledPin = 14;
+byte laserPin = 13;
+byte button = 0;
+byte laserOn = 0;
+
+//  shared variable
+volatile unsigned long mscounter = 0;
 
 
 void setup() {
@@ -13,19 +17,29 @@ void setup() {
   pinMode(startPin, INPUT);
   pinMode(stopPin, INPUT);
   pinMode(buttonPin, INPUT);
+  pinMode(ledPin, OUTPUT);
   pinMode(laserPin, OUTPUT);
-  
+
+  //  turn off led & laser
+  digitalWrite(ledPin, LOW);
   digitalWrite(laserPin, LOW);
+
+  //   Timer set to 1ms
+  Timer1.initialize(1000);
+  Timer1.attachInterrupt(timerCounter);
 
   attachInterrupt(digitalPinToInterrupt(startPin), start, FALLING);
   attachInterrupt(digitalPinToInterrupt(stopPin), stop, FALLING);
 
-  Serial.begin(115200);
+  Serial.begin(9600);
   Serial.writeln("Tekan button untuk menyalakan/mematikan laser");
+
+  //  turn on led & laser
+  digitalWrite(ledPin, HIGH);  
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // put your main code here, to run repeatedly:  
   button = digitalRead(buttonPin);
   if(button = 1)
   {
@@ -38,15 +52,23 @@ void loop() {
 void start()
 {
   ms = 0;
+  Timer1.start();
 }
 
 void stop()
-{
-  
+{  
+  unsigned long ms;    
+
+  Timer1.stop();
+  noInterrupts();
+  ms = mscounter;
+  interrupts();
+
+  Serial.println(ms);
 }
 
-void timerISR()
+void timerCounter()
 {
-  ms++;
+  mscounter++;
 }
 
