@@ -83,6 +83,9 @@ void disableInterrupt()
 {
   detachInterrupt(digitalPinToInterrupt(startPin));
   detachInterrupt(digitalPinToInterrupt(stopPin));
+  Timer1.stop();
+  detected = false;
+  mscounter = 0;
 }
 
 void beep(int duration)
