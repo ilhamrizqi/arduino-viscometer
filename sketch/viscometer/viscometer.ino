@@ -30,16 +30,14 @@ void setup() {
   Timer1.initialize(1000);
   Timer1.attachInterrupt(timerInterrupt);
 
-  attachInterrupt(digitalPinToInterrupt(startPin), start, FALLING);
-  attachInterrupt(digitalPinToInterrupt(stopPin), stop, FALLING);
-
   Serial.begin(9600);
   Serial.println("Tekan button untuk menyalakan/mematikan laser");
 
   //  turn on led & laser
   digitalWrite(laserPin, HIGH);
   digitalWrite(ledPin, LOW);
-  beep(200);
+  enableInterrupt();
+  beep(200);  
 }
 
 void loop() {
@@ -49,9 +47,17 @@ void loop() {
   if(button == 1)
   {
     laserOn = !laserOn;
+    if(laserOn)
+    {
+      enableInterrupt();
+    }
+    else
+    {
+      disableInterrupt();
+    }
     // toggle laser
     digitalWrite(laserPin, laserOn);    
-    delay(200);        
+    delay(200);     
   }
   
   ballDetected = detected;
@@ -65,6 +71,18 @@ void loop() {
   {
     digitalWrite(ledPin, LOW);
   }
+}
+
+void enableInterrupt()
+{
+  attachInterrupt(digitalPinToInterrupt(startPin), start, FALLING);
+  attachInterrupt(digitalPinToInterrupt(stopPin), stop, FALLING);  
+}
+
+void disableInterrupt()
+{
+  detachInterrupt(digitalPinToInterrupt(startPin));
+  detachInterrupt(digitalPinToInterrupt(stopPin));
 }
 
 void beep(int duration)
