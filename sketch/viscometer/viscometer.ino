@@ -7,7 +7,7 @@ byte buzzerPin = 5;
 byte ledPin = 12;
 byte laserPin = 13;
 byte button = 0;
-byte laserOn = 0;
+bool laserOn = true;
 
 //  shared variable
 volatile unsigned long mscounter = 0;
@@ -48,12 +48,12 @@ void loop() {
   button = digitalRead(buttonPin);  
   if(button == 1)
   {
+    laserOn = !laserOn;
     // toggle laser
-    digitalWrite(laserPin, digitalRead(laserPin)^1);
-    laserOn = digitalRead(laserPin);
+    digitalWrite(laserPin, laserOn);    
     delay(200);        
   }
-
+  
   ballDetected = detected;
   if(ballDetected)
   {
@@ -83,7 +83,7 @@ void beepDetected(int duration)
 
 void start()
 {
-  if(detected)
+  if(detected || !laserOn)
   {
     return;
   }
