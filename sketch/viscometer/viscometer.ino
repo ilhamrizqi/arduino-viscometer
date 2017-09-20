@@ -3,11 +3,13 @@
 byte startPin = 2;
 byte stopPin  = 3;
 byte buttonPin = 4;
-byte buzzerPin = 5;
+byte buzzerPin = 11;
 byte ledPin = 12;
 byte laserPin = 13;
 byte button = 0;
-bool laserOn = true;
+bool laserOn = false;
+unsigned long lastBeep = 0;
+unsigned long now = 0;
 
 //  shared variable
 volatile unsigned long mscounter = 0;
@@ -34,10 +36,11 @@ void setup() {
   Serial.println("Tekan button untuk menyalakan/mematikan laser");
 
   //  turn on led & laser
-  digitalWrite(laserPin, HIGH);
-  digitalWrite(ledPin, LOW);
-  enableInterrupt();
-  beep(200);  
+  digitalWrite(laserPin, LOW);
+  digitalWrite(ledPin, LOW);  
+  beep(100);
+  delay(100);
+  beep(100);  
 }
 
 void loop() {
@@ -45,27 +48,30 @@ void loop() {
   // put your main code here, to run repeatedly:  
   button = digitalRead(buttonPin);  
   if(button == 1)
-  {
+  {    
     laserOn = !laserOn;
+    digitalWrite(laserPin, laserOn);
     if(laserOn)
-    {
-      enableInterrupt();
+    {            
+      enableInterrupt();      
     }
     else
-    {
+    {      
       disableInterrupt();
     }
-    // toggle laser
-    digitalWrite(laserPin, laserOn);    
-    delay(200);     
+    delay(1000);
   }
   
   ballDetected = detected;
   if(ballDetected)
-  {
+  {    
     digitalWrite(ledPin, HIGH);
-    beepDetected(200);
-    delay(200);    
+    now = millis();    
+    if((now - lastBeep) >= 1000)
+    {
+      lastBeep = now;
+      beepDetected(200);      
+    }
   }
   else
   {
@@ -74,18 +80,18 @@ void loop() {
 }
 
 void enableInterrupt()
-{
-  attachInterrupt(digitalPinToInterrupt(startPin), start, FALLING);
-  attachInterrupt(digitalPinToInterrupt(stopPin), stop, FALLING);  
+{    
+  attachInterrupt(digitalPinToInterrupt(startPin), start, RISING);
+  attachInterrupt(digitalPinToInterrupt(stopPin), stop, RISING);
 }
 
 void disableInterrupt()
-{
+{  
   detachInterrupt(digitalPinToInterrupt(startPin));
   detachInterrupt(digitalPinToInterrupt(stopPin));
   Timer1.stop();
   detected = false;
-  mscounter = 0;
+  mscounter = 0;  
 }
 
 void beep(int duration)
@@ -110,10 +116,11 @@ void start()
   }
   noInterrupts();
   mscounter = 0;
-  detected = true;  
-  interrupts();
-    
+  detected = true;
+  interrupts();    
   Timer1.start();
+  lastBeep = millis();
+  beep(100);
 }
 
 void stop()
@@ -130,6 +137,7 @@ void stop()
   interrupts();
 
   Serial.println(ms);
+  beep(100);
 }
 
 void timerInterrupt()
